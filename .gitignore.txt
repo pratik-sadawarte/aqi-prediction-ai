@@ -2,3 +2,7 @@
 .env
 data/
 __pycache__/
+
+# Ignore temp files
+tempCodeRunnerFile.py
+*.text
