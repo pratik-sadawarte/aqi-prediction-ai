@@ -1,5 +1,5 @@
 # Ignore API key and data files
-.env
+.env*
 data/
 __pycache__/
 
