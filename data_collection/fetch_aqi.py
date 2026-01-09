@@ -1,26 +1,31 @@
 import requests
 import pandas as pd
 from datetime import datetime
-import time
 from dotenv import load_dotenv
 import os
 
 # Load API key
 load_dotenv()
-API_KEY = os.getenv("177e07039675354cb1861b80f7bad49d")
+API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
-# Coordinates for your city (Example: Pune)
-LAT = 18.5204
-LON = 73.8567
+# Coordinates (Mumbai)
+LAT = 19.0760
+LON = 72.8777
 
-# CSV file path
-csv_path = "data/aqi_data.csv"
+# CSV path
+csv_path = "../data/aqi_data.csv"
+os.makedirs("../data", exist_ok=True)
 
-# Function to fetch AQI data
 def fetch_aqi():
-    url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={LAT}&lon={LON}&appid=177e07039675354cb1861b80f7bad49d"
-    res = requests.get(url)
-    data = res.json()
+    print("Starting AQI fetch...")
+
+    url = (
+        f"http://api.openweathermap.org/data/2.5/air_pollution"
+        f"?lat={LAT}&lon={LON}&appid={API_KEY}"
+    )
+
+    response = requests.get(url, timeout=20)
+    data = response.json()
 
     aqi = data["list"][0]["main"]["aqi"]
     comp = data["list"][0]["components"]
@@ -38,19 +43,12 @@ def fetch_aqi():
 
     df = pd.DataFrame([row])
 
-    # If file doesn’t exist, create it; otherwise append
     if not os.path.exists(csv_path):
         df.to_csv(csv_path, index=False)
     else:
-        df.to_csv(csv_path, mode='a', header=False, index=False)
+        df.to_csv(csv_path, mode="a", header=False, index=False)
 
-    print(f"✅ Data recorded at {row['timestamp']} | AQI: {aqi}")
+    print(f"Data recorded at {row['timestamp']} | AQI: {aqi}")
 
-# Run every 1 hour (3600 seconds)
-while True:
-    try:
-        fetch_aqi()
-        time.sleep(3600)  # 1 hour
-    except Exception as e:
-        print("❌ Error:", e)
-        time.sleep(600)  # retry in 10 minutes
+if __name__ == "__main__":
+    fetch_aqi()
