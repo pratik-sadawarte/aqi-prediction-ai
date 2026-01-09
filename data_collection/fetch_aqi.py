@@ -3,16 +3,19 @@ import pandas as pd
 from datetime import datetime
 from dotenv import load_dotenv
 import os
+import sys
 
 # Load API key
 load_dotenv()
 API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
-# Coordinates (Mumbai)
+if not API_KEY:
+    print("ERROR: OPENWEATHER_API_KEY not found")
+    sys.exit(1)
+
 LAT = 19.0760
 LON = 72.8777
 
-# CSV path
 csv_path = "../data/aqi_data.csv"
 os.makedirs("../data", exist_ok=True)
 
@@ -25,20 +28,32 @@ def fetch_aqi():
     )
 
     response = requests.get(url, timeout=20)
+
+    if response.status_code != 200:
+        print(f"API ERROR: {response.status_code}")
+        print(response.text)
+        return
+
     data = response.json()
 
-    aqi = data["list"][0]["main"]["aqi"]
+    # Validate response structure
+    if "list" not in data or len(data["list"]) == 0:
+        print("ERROR: AQI data not found in API response")
+        print(data)
+        return
+
     comp = data["list"][0]["components"]
+    aqi = data["list"][0]["main"]["aqi"]
 
     row = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "aqi": aqi,
-        "co": comp["co"],
-        "no2": comp["no2"],
-        "o3": comp["o3"],
-        "so2": comp["so2"],
-        "pm2_5": comp["pm2_5"],
-        "pm10": comp["pm10"]
+        "co": comp.get("co"),
+        "no2": comp.get("no2"),
+        "o3": comp.get("o3"),
+        "so2": comp.get("so2"),
+        "pm2_5": comp.get("pm2_5"),
+        "pm10": comp.get("pm10")
     }
 
     df = pd.DataFrame([row])
@@ -48,7 +63,7 @@ def fetch_aqi():
     else:
         df.to_csv(csv_path, mode="a", header=False, index=False)
 
-    print(f"Data recorded at {row['timestamp']} | AQI: {aqi}")
+    print(f"AQI data recorded at {row['timestamp']} | AQI: {aqi}")
 
 if __name__ == "__main__":
     fetch_aqi()
