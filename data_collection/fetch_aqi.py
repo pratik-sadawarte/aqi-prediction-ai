@@ -16,8 +16,16 @@ if not API_KEY:
 LAT = 19.0760
 LON = 72.8777
 
-csv_path = "../data/aqi_data.csv"
-os.makedirs("../data", exist_ok=True)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+os.makedirs(DATA_DIR, exist_ok=True)
+
+
+csv_path = os.path.join(DATA_DIR, "aqi_data.csv")
+
+print("Writing data to:", csv_path)
+
+
 
 def fetch_aqi():
     print("Starting AQI fetch...")
