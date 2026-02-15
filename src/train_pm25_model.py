@@ -9,10 +9,20 @@ DATA_PATH = (r"data/mumbai_aqi_weather.csv")
 MODEL_PATH = "models/pm25_rf.pkl"
 
 def prepare_data(df):
-    df["timestamp"] = pd.to_datetime(df["timestamp"], format="%d-%m-%Y %H:%M")
 
+    df["timestamp"] = pd.to_datetime(
+        df["timestamp"],
+        format="mixed",
+        errors="coerce"
+    )
+
+    # Remove invalid timestamps
+    df = df.dropna(subset=["timestamp"])
+
+    # Sort by time
     df = df.sort_values("timestamp")
 
+    return df
     # Lag features (use past values)
     df["pm2_5_lag1"] = df["pm2_5"].shift(1)
     df["pm2_5_lag2"] = df["pm2_5"].shift(2)
