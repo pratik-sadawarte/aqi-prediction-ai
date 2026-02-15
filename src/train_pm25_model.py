@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error
 
-DATA_PATH = (r"C:\Users\prati\Downloads\mumbai_aqi_weather (2).csv")
+DATA_PATH = (r"data/mumbai_aqi_weather.csv")
 MODEL_PATH = "models/pm25_rf.pkl"
 
 def prepare_data(df):

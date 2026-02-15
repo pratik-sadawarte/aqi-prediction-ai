@@ -3,7 +3,7 @@ from datetime import datetime
 import joblib
 
 
-DATA_PATH = r"C:\Users\prati\Downloads\mumbai_aqi_weather (2).csv"
+DATA_PATH = r"data/mumbai_aqi_weather.csv"
 
 
 # -------------------------
