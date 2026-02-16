@@ -63,3 +63,19 @@ def train():
 
 if __name__ == "__main__":
     train()
+from sklearn.metrics import mean_absolute_error, r2_score
+import numpy as np
+preds = model.predict(X_test)
+mae = mean_absolute_error(y_test, preds)
+r2 = r2_score(y_test, preds)
+rmse = np.sqrt(((preds - y_test) ** 2).mean())
+
+print("Model Evaluation:")
+print(f"MAE  : {mae:.2f}")
+print(f"RMSE : {rmse:.2f}")
+print(f"R2   : {r2:.3f}")
+
+with open("model_performance.txt", "a") as f:
+    f.write(
+        f"{pd.Timestamp.now()}, MAE={mae:.2f}, RMSE={rmse:.2f}, R2={r2:.3f}\n"
+    )
