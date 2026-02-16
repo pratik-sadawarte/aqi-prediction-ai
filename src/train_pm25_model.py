@@ -10,6 +10,7 @@ MODEL_PATH = "models/pm25_rf.pkl"
 
 def prepare_data(df):
 
+    # Parse mixed timestamps
     df["timestamp"] = pd.to_datetime(
         df["timestamp"],
         format="mixed",
@@ -22,15 +23,16 @@ def prepare_data(df):
     # Sort by time
     df = df.sort_values("timestamp")
 
-    return df
-    # Lag features (use past values)
+    # Create time feature
+    df["hour"] = df["timestamp"].dt.hour
+
+    # Create lag features
     df["pm2_5_lag1"] = df["pm2_5"].shift(1)
     df["pm2_5_lag2"] = df["pm2_5"].shift(2)
 
-    # Time features
-    df["hour"] = df["timestamp"].dt.hour
-
+    # Remove rows with NaN (from lagging)
     df = df.dropna()
+
     return df
 
 def train():
